@@ -33,7 +33,7 @@ namespace keepr.Controllers
     vault.UserId = HttpContext.User.Identity.Name;
     return _repo.Create(vault);
    }
-   throw new Exception("INVALID VAULT");
+   throw new Exception("Invalid Vault");
   }
 
  }
