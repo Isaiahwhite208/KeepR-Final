@@ -40,5 +40,17 @@ namespace keepr.Controllers
    }
    throw new Exception("Invalid Keep");
   }
+  [HttpPut]
+  public Keep Put([FromBody] Keep keep)
+  {
+   return _repo.Update(keep);
+  }
+  [Authorize]
+  [HttpDelete("{keepId}")]
+  public void Delete(int keepId)
+  {
+   _repo.Delete(keepId);
+   return;
+  }
  }
 }
