@@ -54,6 +54,7 @@
         name: "login",
         mounted() {
             this.$store.dispatch("authenticate");
+            this.$store.dispatch("getPublicKeeps");
         },
         data() {
             return {
@@ -68,6 +69,11 @@
                     username: ""
                 }
             };
+        },
+        computed: {
+            publicKeeps() {
+                return this.$store.state.publicKeeps;
+            }
         },
         methods: {
             register() {

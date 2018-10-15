@@ -8,12 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace keepr.Controllers
 {
-
  [Route("[controller]")]
  public class AccountController : Controller
  {
   private readonly UserRepository _repo;
-
   [HttpPost("Login")]
   public async Task<User> Login([FromBody]UserLogin creds)
   {
@@ -24,7 +22,6 @@ namespace keepr.Controllers
    await HttpContext.SignInAsync(user._principal);
    return user;
   }
-
   [HttpPost("Register")]
   public async Task<User> Register([FromBody]UserRegistration creds)
   {
@@ -35,14 +32,12 @@ namespace keepr.Controllers
    await HttpContext.SignInAsync(user._principal);
    return user;
   }
-
   [HttpDelete("Logout")]
   public async Task<bool> Logout()
   {
    await HttpContext.SignOutAsync();
    return true;
   }
-
   [Authorize]
   [HttpGet("Authenticate")]
   public User Authenticate()
@@ -50,7 +45,6 @@ namespace keepr.Controllers
    var id = HttpContext.User.Identity.Name;
    return _repo.GetUserById(id);
   }
-
   public AccountController(UserRepository repo)
   {
    _repo = repo;

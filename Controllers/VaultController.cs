@@ -23,7 +23,6 @@ namespace keepr.Controllers
    var userId = HttpContext.User.Identity.Name;
    return _repo.GetUserVaults(userId);
   }
-
   [Authorize]
   [HttpPost]
   public Vault Post([FromBody] Vault vault)
@@ -35,6 +34,5 @@ namespace keepr.Controllers
    }
    throw new Exception("Invalid Vault");
   }
-
  }
 }
