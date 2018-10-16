@@ -64,6 +64,5 @@ namespace keepr.Repositories
   {
    _db = db;
   }
-
  }
 }

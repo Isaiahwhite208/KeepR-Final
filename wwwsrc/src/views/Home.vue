@@ -1,93 +1,110 @@
 <template>
-  <div class="heading-bar">
-    <v-toolbar app class="heading-bar">
-      <v-toolbar-title class="heading-title">THE KeepR'</v-toolbar-title>
-      <v-card>
-        <v-text-field class="heading-searchbar" label="Search KeepR'">
-        </v-text-field>
-      </v-card>
-      <v-spacer></v-spacer>
-      <v-btn flat color="#66fcf1" class=" logout" raised @click="logoutPrompt = true">logout</v-btn>
+  <div>
+    <v-toolbar height="60rem" app>
+      <v-btn flat class=" logout" raised @click="logoutDialog = true">Logout</v-btn>
     </v-toolbar>
     <div class="page-wrapper">
       <section>
-        <p class="heading">Welcome back {{user.username}}!</p>
+        <h1 class=" heading">welcome to <br /> {{user.username}}'s dashboard</h1>
       </section>
+      <v-divider style="margin-bottom: 2rem;" color="#66fcf1"></v-divider>
       <section>
-        <v-card class="dashboard">
+        <v-card class="dashboard-vaults">
           <v-container row wrap>
             <v-flex xs12>
-              <v-card-title class=" card-title">
+              <v-card-title class=" card-heading">
                 <p>Your Vaults</p>
-                <v-spacer></v-spacer>
-                <v-btn flat color="#66fcf1" @click="newVaultDialogVal = true" fab>
-                  <v-btn flat color="#66fcf1">add</v-btn>
-                </v-btn>
+                <v-btn flat color="#66fcf1" @click="newVaultDialogVal = true" fab>Add</v-btn>
               </v-card-title>
-              <div class="monitor">
-                <p>Make a vault or two, because you dont have any.</p>
-              </div>
+              <v-divider color="#66fcf1"></v-divider>
+              <v-layout v-if="userVaults.length > 0">
+                <div class="vaults-container">
+                  <v-card v-for="vault in userVaults" :key="vault._id" class="vault-card" hover>
+                    <v-card-title primary-title>
+                      <div>
+                        <h4 class="vault-name">{{vault.name}}</h4>
+                        <p class="vault-description">{{vault.description}}</p>
+                      </div>
+                    </v-card-title>
+                    <div class="v-card-btn">
+                      <v-btn flat @click="$router.push({ name: 'vault', params: { id: vault.id }})" class="vault-card-actions"
+                        fab>Open in new</v-btn>
+                    </div>
+                  </v-card>
+                </div>
+              </v-layout>
             </v-flex>
           </v-container>
         </v-card>
-        <v-divider color="#66fcf1"></v-divider>
-        <v-card class="dashboard">
+        <v-divider style="margin-top: 3rem; margin-bottom: 3rem;" color="#66fcf1"></v-divider>
+        <v-card class="dashboard-keeps">
           <v-container row wrap>
             <v-flex xs12>
-              <v-card-title class=" card-title">
-                <p>Your Keeps</p>
-                <v-spacer></v-spacer>
-                <v-btn flat color="#66fcf1" @click="newKeepDialogVal = true" fab>
-                  <v-btn flat color="#66fcf1">add</v-btn>
-                </v-btn>
+              <v-card-title class=" card-heading">
+                <p>Your keeps</p>
+                <v-btn flat color="#66fcf1" @click="newKeepDialogVal = true" fab>Add</v-btn>
               </v-card-title>
-              <div v-if="userKeeps.length > 0">
-                <v-card v-for="keep in userKeeps" :key="keep.id">
-                  <v-container>
-                    <v-flex xs12>
-                      <v-card-title></v-card-title>
-                    </v-flex>
-                  </v-container>
-                </v-card>
-              </div>
-              <div v-else class="monitor">
-                <p>You have no keeps at the moment. Make some?</p>
+              <v-divider color="#66fcf1"></v-divider>
+              <v-layout v-if="userKeeps.length > 0">
+                <div class="keeps-container">
+                  <v-card v-for="keep in userKeeps" :key="keep._id" class="keep-card" hover>
+                    <div>
+                      <v-btn flat @click="viewKeep(keep)" class="keepActions" fab>Views</v-btn>
+                      <v-btn flat class="keepActions" fab>Save</v-btn>
+                      <v-btn flat class="keepActions" fab>Share</v-btn>
+                    </div>
+                    <v-card-title primary-title>
+                      <div>
+                        <h4 class="keep-name">{{keep.name}}</h4>
+                        <p class="keep-description">{{keep.description}}</p>
+                      </div>
+                    </v-card-title>
+                  </v-card>
+                </div>
+              </v-layout>
+              <div v-else class="no-keeps">
+                <p class="">You currently don't have any keeps</p>
               </div>
             </v-flex>
           </v-container>
         </v-card>
+        <v-divider style="margin-top: 3rem;" color="#66fcf1"></v-divider>
       </section>
       <v-dialog v-model="newVaultDialogVal" width="800">
-        <v-card class="prompt">
-          <v-card-title>Create new vault</v-card-title>
+        <v-card class="form">
+          <v-card-title class=" text-bold">Create new vault</v-card-title>
+          <v-divider color="#66fcf1"></v-divider>
           <v-text-field label="Title" v-model="newVaultDialog.name"></v-text-field>
           <v-text-field label="Description" v-model="newVaultDialog.description"></v-text-field>
           <v-card-actions>
-            <v-btn flat color="#66fcf1" type="submit" @click="newVault; newVaultDialogVal = false;" class="">create
-              vault</v-btn>
+            <v-btn flat type="submit" @click="newVault(); newVaultDialogVal = false;" class="">Create Vault</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
       <v-dialog v-model="newKeepDialogVal" width="800">
-        <v-card class="prompt">
+        <v-card class="form">
           <v-card-title class="">Create new keep</v-card-title>
+          <v-divider color="#66fcf1"></v-divider>
           <v-text-field label="Title" v-model="newKeepDialog.name"></v-text-field>
           <v-text-field label="Img Link" v-model="newKeepDialog.img"></v-text-field>
           <v-text-field label="Description" v-model="newKeepDialog.description"></v-text-field>
+          <input type="checkbox" label="Make Keep Private" v-model="newKeepDialog.isPrivate"> Make Private
           <v-card-actions>
-            <v-btn flat color="#66fcf1" type="submit" @click="newKeep(); newKeepDialogVal = false;" class="">create
-              keep</v-btn>
+            <v-btn flat type="submit" @click="newKeep(); newKeepDialogVal = false;" class="">Create Keep</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="logoutPrompt" width="800">
-        <v-card class="prompt">
-          <v-card-title class="">Logout</v-card-title>
-          <v-card-text class="">Are you sure you want to leave so soon?</v-card-text>
+      <v-dialog v-model="editKeepDialogVal" width="800">
+        <v-card class="form">
+          <v-card-title class="">Edit this keep</v-card-title>
+          <v-divider color="#66fcf1"></v-divider>
+          <v-text-field label="Title" v-model="editKeepDialog.name"></v-text-field>
+          <v-text-field label="Img Link" v-model="editKeepDialog.img"></v-text-field>
+          <v-text-field label="Description" v-model="editKeepDialog.description"></v-text-field>
+          <input type="checkbox" label="Make Keep Private" v-model="editKeepDialog.isPrivate"> Make Private
           <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn flat color="#66fcf1" @click="logoutPrompt = false">Cancel</v-btn>
-            <v-btn flat color="#66fcf1" @click="logout">Logout</v-btn>
+            <v-btn flat type="submit" @click="editKeep(keep); editKeepDialogVal = false;" class="">Edit Keep</v-btn>
+            <v-btn flat @click="editKeepDialogVal = false" class="">Cancel</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -100,32 +117,54 @@
     name: "home",
     data() {
       return {
+        activeVault: {},
+        newVaultDialogVal: false,
         newVaultDialog: {
           name: "",
           description: ""
         },
-        newVaultDialogVal: false,
+
+        activeKeep: {},
+        newKeepDialogVal: false,
+        editKeepDialogVal: false,
+        editVaultDialogVal: false,
+        viewKeepDialogVal: false,
+        deleteKeepDialogVal: false,
         newKeepDialog: {
           name: "",
           img: "",
           description: "",
           isPrivate: false
         },
-        newKeepDialogVal: false,
-        logoutPrompt: false
+        editKeepDialog: {
+          name: "",
+          img: "",
+          description: "",
+          isPrivate: false
+        },
+
+        logoutDialog: false
       };
     },
+
     computed: {
       user() {
         return this.$store.state.user;
       },
       userKeeps() {
         return this.$store.state.userKeeps;
+      },
+      userVaults() {
+        return this.$store.state.userVaults;
       }
     },
     mounted() {
+      //blocks users not logged in
       if (!this.$store.state.user.id) {
         this.$router.push({ name: "login" });
+      } else {
+        this.$store.dispatch("getUserKeeps");
+        this.$store.dispatch("getUserVaults");
       }
     },
     methods: {
@@ -133,105 +172,46 @@
         this.$store.dispatch("logout");
       },
       newVault() {
-        this.$store.dispatch("newVault", this.newVaultDialog);
+        let newVaultData = {
+          name: this.newVaultDialog.name,
+          description: this.newVaultDialog.description
+        };
+        this.$store.dispatch("newVault", newVaultData);
         this.newVaultDialog.name = "";
         this.newVaultDialog.description = "";
       },
+      viewVault(vault) {
+        this.activeVault = vault;
+        this.$store.dispatch("setActiveVault", activeVault);
+        this.$router.push({ name: "" });
+      },
       newKeep() {
-        this.newKeepDialog.isPrivate = this.newKeepDialog.isPrivate ? 1 : 0;
-        this.$store.dispatch("newKeep", this.newKeepDialog);
+        let newKeepData = {
+          name: this.newKeepDialog.name,
+          img: this.newKeepDialog.img,
+          description: this.newKeepDialog.description
+        };
+        newKeepData.isPrivate = this.newKeepDialog.isPrivate ? 1 : 0;
+        this.$store.dispatch("newKeep", newKeepData);
         this.newKeepDialog.name = "";
         this.newKeepDialog.img = "";
         this.newKeepDialog.description = "";
         this.newKeepDialog.isPrivate = false;
+      },
+      editKeep(keep) {
+        this.editKeepDialogVal = false;
+        this.$store.dispatch("editKeep", keep);
+      },
+      viewKeep(keep) {
+        this.activeKeep = keep;
+        this.viewKeepDialogVal = true;
+        this.$store.dispatch("incrementViews", this.activeKeep);
+      },
+      deleteKeep(keep) {
+        this.$store.dispatch("deleteKeep", keep);
+        this.deleteKeepDialogVal = false;
+        this.viewKeepDialogVal = false;
       }
     }
   };
 </script>
-
-<style scoped>
-  .prompt {
-    display: flex;
-    flex-direction: column;
-    color: #66fcf1;
-    background-color: #494949;
-
-  }
-
-  .page-wrapper {
-    height: 100%;
-    width: calc(100% - 2rem);
-    max-width: 100rem;
-    margin: auto;
-    margin-top: 2rem;
-    padding-top: 64px;
-    padding-bottom: 4rem;
-    padding-left: 5rem;
-    padding-right: 5rem;
-    display: flex;
-    flex-direction: column;
-    background-color: #494949;
-    overflow-y: auto;
-    position: relative;
-  }
-
-  .fab {
-    background-color: #66fcf1;
-    border-radius: 2rem;
-    border: solid 1px #66fcf1;
-    height: 2.4rem;
-    padding-left: 0.28rem;
-    padding-right: 0.28rem;
-    display: flex;
-    align-items: center;
-    margin-right: 1rem;
-  }
-
-  .dashboard {
-    background-color: #494949;
-  }
-
-  .heading {
-    margin-bottom: 2rem;
-    font-size: 2rem;
-    display: flex;
-    flex-direction: center;
-    justify-content: center;
-    text-align: left;
-    color: #66fcf1;
-  }
-
-  .heading-bar {
-    background-color: #494949;
-  }
-
-  .heading-title {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    font-size: 3rem;
-    display: flex;
-    flex-direction: start;
-    color: #66fcf1;
-    background-color: #494949;
-  }
-
-  .heading-searchbar {
-    height: 4rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    padding-top: 0.3rem;
-    background-color: #494949;
-  }
-
-  .card-title {
-    font-size: 2rem;
-    display: flex;
-    align-items: center;
-    color: #66fcf1;
-  }
-
-  .monitor {
-    margin: 5rem;
-    color: orangered;
-  }
-</style>

@@ -9,10 +9,10 @@ namespace keepr.Controllers
 {
  [Route("api/[controller]")]
  [ApiController]
- public class VaultController : Controller
+ public class VaultsController : Controller
  {
   VaultRepository _repo;
-  public VaultController(VaultRepository repo)
+  public VaultsController(VaultRepository repo)
   {
    _repo = repo;
   }
@@ -33,6 +33,37 @@ namespace keepr.Controllers
     return _repo.Create(vault);
    }
    throw new Exception("Invalid Vault");
+  }
+  [Authorize]
+  [HttpDelete("{vaultId}")]
+  public void Delete(int vaultId)
+  {
+   _repo.Delete(vaultId);
+   return;
+  }
+
+
+  [Authorize]
+  [HttpPost("keeps")]
+  public void AddKeepToVault([FromBody]VaultKeep vk)
+  {
+   vk.UserId = HttpContext.User.Identity.Name;
+   _repo.AddKeepToVault(vk);
+   return;
+  }
+
+  [Authorize]
+  [HttpGet("keeps/{id}")]
+  public IEnumerable<Keep> GetKeepsByVaultId(int id)
+  {
+   return _repo.GetKeepsByVaultId(id);
+  }
+  [Authorize]
+  [HttpPut("keeps")]
+  public void RemoveKeepFromVault([FromBody]VaultKeep vk)
+  {
+   _repo.RemoveKeepFromVault(vk);
+   return;
   }
  }
 }

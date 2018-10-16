@@ -60,6 +60,8 @@ namespace keepr
 
    services.AddTransient<IDbConnection>(x => CreateDBContext());
    services.AddTransient<UserRepository>();
+   services.AddTransient<VaultRepository>();
+   services.AddTransient<KeepRepository>();
   }
 
   private IDbConnection CreateDBContext()

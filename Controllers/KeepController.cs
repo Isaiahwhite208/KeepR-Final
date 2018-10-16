@@ -9,10 +9,10 @@ namespace keepr.Controllers
 {
  [Route("api/[controller]")]
  [ApiController]
- public class KeepController : Controller
+ public class KeepsController : Controller
  {
   KeepRepository _repo;
-  public KeepController(KeepRepository repo)
+  public KeepsController(KeepRepository repo)
   {
    _repo = repo;
   }

@@ -7,6 +7,7 @@ namespace keepr.Models
    Name = name;
    Description = description;
   }
+  public Vault() { }
   public int Id { get; set; }
   public string Name { get; set; }
   public string Description { get; set; }
